@@ -1,14 +1,18 @@
 
 class StepSequencer {
   int bpm; 
-  int step=0; 
-  int quarterNoteDuration=4;
-  int errors;
+  boolean stepped=true; 
+  float  floatStep;
+  float errors;
 
-  //int[] pattern;
-  Pattern pattern;
+  boolean isRunning = false;
+  boolean externalMidiClock = false;
+  int gatheredMidi24ths=0;
+  int quarterNoteDuration=1;
 
-  ArrayList<Pattern> patterns = new ArrayList<Pattern>();
+  EuclideanPattern pattern = new EuclideanPattern();
+
+
 
   int savedTime; 
 
@@ -16,59 +20,80 @@ class StepSequencer {
   StepSequencer(int bpm) {
     this.bpm = bpm;
 
-
-    setPattern();
-
-  }
-
-  
-
-  void setPattern() {
     int n=(int) random(1, 32);
     int k=(int) random(1, n);
 
-    setPattern( n, k);
+    pattern.setPattern( n, k);
   }
 
   void setPattern(int n, int k) {
-    pattern=new EuclideanPattern(n, k);
-    patterns.add(pattern);
+    ((EuclideanPattern) pattern).setPattern(n, k);
+
+    //patterns.add(this.pattern.toString());
   }
 
-  void setPattern(Pattern newPattern) {
-
-    pattern=newPattern;
-    patterns.add(pattern);
-  }
-
-  // Starting the StepSequencer
-  void start() {
+  void reset() {
+    println("resetting");
     savedTime = millis();
-    step = 0;
+    floatStep = 0;
     errors = 0;
+    gatheredMidi24ths=0;
+  }
+
+  void start() {
+    reset();
+    StepSequencer.isRunning = true;
+  }
+
+  void stop() {
+    reset();
+    StepSequencer.isRunning = false;
   }
 
   void run() {
-    updateStep();
+    if (isRunning) {
+
+      if (externalMidiClock) updateExternalStep();
+      else updateStep();
+    }
   }
 
   void updateStep() {
-    int  totalTime = 60000/bpm;
-    int passedTime = millis()- savedTime;
-    int currentStep =(int) (passedTime / (totalTime/quarterNoteDuration));
-    if (step<currentStep) {
+    float  totalTime = 60000/bpm;
+    float passedTime = millis()- savedTime;
+
+    float currentStep = (passedTime / (totalTime/quarterNoteDuration));
+
+    int step = (int) ( currentStep);
+    int lastStep = (int) ( floatStep);
+
+    floatStep = currentStep;
+    if (lastStep < step) {
       errors=passedTime-step*(totalTime/quarterNoteDuration);
-      step=currentStep;
-    }
+      stepped=true;
+    } else stepped=false;
+
+    //    println(stepped, lastStep, step, floatStep, currentStep);
+  }
+  void updateExternalStep() {
+    floatStep = ((gatheredMidi24ths*quarterNoteDuration)/24.0);
   }
   int getStep() {
-    
-    return step;
+
+    return (int) (floatStep);
   }
+  float getFloatStep() {
+
+    return ( floatStep);
+  }
+
   int getCurrentPatternStep() {
-    return pattern.getStep(step);
+    return pattern.getStep(this.getStep());
   }
   String toString() {
-    return "bpm: "+bpm+"  [+/-: "+errors/(step+1)+" ms]"+"\nstep: "+step%pattern.getLength()+" ("+step+")"+" [[q="+quarterNoteDuration+"]]\npattern: "+pattern;
+    return "isPlaying: "+isRunning
+      +"\nbpm: "+bpm+"  ["+errors/( (int) ( floatStep)+1)+" ms]"
+      +"\nstep: "+ (int) ( floatStep)
+      +"\n"+pattern;
   }
 }

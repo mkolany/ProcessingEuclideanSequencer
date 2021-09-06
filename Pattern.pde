@@ -1,5 +1,8 @@
+
 class Pattern {
   int[] pattern;
+  int radius=100;
+  float angle;
   Pattern (int[] pattern) {
     this.pattern=pattern;
   }
@@ -15,8 +18,7 @@ class Pattern {
   void setPattern (int[] pattern) {
     this.pattern=pattern;
   }
-  void updatePattern () {
-  }
+
   int getStep(int step) {
     int currentStep = step%pattern.length;
     return pattern[currentStep];
@@ -24,24 +26,17 @@ class Pattern {
   int getLength() {
     return pattern.length;
   }
-  int getN() {
-    return 0;
-  } 
-  int getK() {
-    return 0;
-  }
+
 
   void display() {
     int npoints = this.getLength();
-    float radius=100;
-    float angle = TWO_PI / npoints;
 
-    float oldStrokeWeight = g.strokeWeight;
-    int oldStroke = g.strokeColor;
-    int oldFill = g.fillColor;
-    stroke(oldStroke);
-    fill(oldFill);    
-    noStroke();
+    angle = TWO_PI / npoints;
+
+    push();    
+    strokeWeight(7.5);
+    stroke(darkBlue);
+    fill(lightBlue);    
     beginShape();
     for (int n = 0; n < npoints; n ++) {
       float a =n*angle;
@@ -50,21 +45,59 @@ class Pattern {
       vertex(sx, sy);
     }
     endShape(CLOSE);
-    stroke(invertColor(oldFill));
-    fill(invertColor(oldFill));
-    noFill();
-    strokeWeight(5);
+
+
+    strokeWeight(3);
+    stroke(255, 150);
+    fill(lightBlue);
+    fill(255);
+    //if (StepSequencer.getCurrentPatternStep()==1) fill((255));
+    if (StepSequencer.getCurrentPatternStep()==1) noStroke();
+
     beginShape();
+
+    int k=0;
     for (int n = 0; n < npoints; n ++) {
       float a =n*angle;
-      float sx =  cos(a) * radius;
-      float sy =  sin(a) * radius;
-      if (pattern[n]!=0) vertex(sx, sy);
+      float sx =  cos(a) * radius*0.95;
+      float sy =  sin(a) * radius*0.95;
+      if (pattern[n]!=0) {
+        vertex(sx, sy);
+        k++;
+      }
     }
+    if (k==1) vertex(0, 0);
     endShape(CLOSE);
-    strokeWeight(oldStrokeWeight);
-    stroke(oldStroke);
-    fill(oldFill);
+
+
+
+    beginShape(POINTS);
+    for (int n = 0; n < npoints; n ++) {
+      float a =n*angle;
+      float sx =  cos(a) * radius*1.15;
+      float sy =  sin(a) * radius*1.15;
+
+      if (pattern[n]!=0) {  
+        strokeWeight(5);
+        stroke(darkBlue);
+      } else {  
+        strokeWeight(4);
+        stroke(0, 45, 90, 100);
+      }
+      vertex(sx, sy);
+    }
+    endShape();
+    pop();
+
+    if (mousePressed) this.clicked(mouseX, mouseY);
+  }
+
+  void clicked( int mx, int my) {
+    //println(mx,  my);
+    if ( mx > width/2-radius && mx < width/2+radius  && my > height/2-radius && my <height/2+radius) {
+      println("da");
+      mousePressed=false;
+    }
   }
   String toString() {
     return "["+join(nf(pattern, 0), ", ")+"]";
@@ -85,23 +118,26 @@ class EuclideanPattern extends Pattern {
     int n=(int) random(1, 32);
     int k=(int) random(1, n);
 
-    this.n = n;
-    this.k = k;
-    updatePattern();
+
+    setPattern( n, k );
   }
-  @Override
-    void updatePattern() {
+  void setPattern() {
     this.setPattern(bjorklund2(n, k));
   }
-  @Override
-    int getN() {
+  void setPattern(int n, int k) { 
+    this.n = n;
+    this.k = k;
+    this.setPattern(bjorklund2(n, k));
+  }
+  int getN() {
     return n;
   } 
-  @Override
-    int getK() {
+  int getK() {
     return k;
   }
-
+  String shortString() {
+    return "("+n+","+ k+")";
+  }
 
   @Override
     String toString() {

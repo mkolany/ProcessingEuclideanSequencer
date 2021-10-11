@@ -4,7 +4,7 @@ An algorithm that produces [euclidean patterns](http://cgm.cs.mcgill.ca/~godfrie
 ![sequencer](https://i.imgur.com/LKizpDt.png)
 
 ## Overview
-It's an implementation of my concept of creating such patterns which seems to be way simpler approach than [bjorklund's Algorithm](https://github.com/brianhouse/bjorklund). In order to create rhytmic pattern of length N with K steps one could simply quantize a segment between (0,0) and (N,K) and check at where the values change.
+It's an implementation of my concept of creating such patterns which seems to be way simpler approach than [bjorklund's Algorithm](https://github.com/brianhouse/bjorklund). In order to create rhytmic pattern of length N with K steps one could simply quantize a segment between (0,0) and (N,K) and check at what n=0,...,N-1 the values change.
 
 ![quantizing example](https://i.imgur.com/80rE6MC.png)
 

@@ -1,5 +1,5 @@
 # Processing Euclidean Sequencer
-An algorithm that produces [euclidean patterns](http://cgm.cs.mcgill.ca/~godfried/publications/banff.pdf) with capability of connecting MIDI inputs and outputs. There's a possibility of connecting it to Ableton with the use of virtual MIDI ports (like [loopMIDI](https://www.tobias-erichsen.de/software/loopmidi.html)).
+An algorithm that produces [euclidean patterns](http://cgm.cs.mcgill.ca/~godfried/publications/banff.pdf) with simple GUI and capability of connecting MIDI inputs and outputs. There's a possibility of connecting it to Ableton with the use of virtual MIDI ports (like [loopMIDI](https://www.tobias-erichsen.de/software/loopmidi.html)).
 
 ![sequencer](https://i.imgur.com/LKizpDt.png)
 
